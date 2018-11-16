@@ -13,12 +13,12 @@ conn.connect()
 console.log('conn.connect()')
 var jsonWrite = function(res, ret) {
     if(typeof ret === 'undefined') {
-        res.json({
+        return res.json({
             code: '1',
             msg: '操作失败'
         })
     } else {
-        res.json(ret)
+        return res.json(ret)
     }
 }
 function checkToken(res,token){
@@ -53,7 +53,7 @@ router.post('/getOrderList', (req, res) => {
                     }
                     console.log(result,'conn.connect()conn.connect()conn.connect()conn.connect()')
                     if (result) {
-                        res.json({data: result, status: 0})                                    
+                        return res.json({data: result, status: 0})                                    
                     }
                 })
             }else{
@@ -64,7 +64,7 @@ router.post('/getOrderList', (req, res) => {
                     }
                     console.log(result,'conn.connect()conn.connect()conn.connect()conn.connect()')
                     if (result) {
-                        res.json({data: result, status: 0})                                    
+                        return res.json({data: result, status: 0})                                    
                     }
                 })
             }
@@ -91,10 +91,10 @@ router.post('/getOrderItem', (req, res) => {
                             result[0].status_many=result1[0].status_many
                             result[0].status_exist=true
                         }
-                        res.json({data: result[0],status: 0})
+                        return res.json({data: result[0],status: 0})
                     })
                 }else{
-                    res.json({data: '系统错误',status: -1})
+                    return res.json({data: '系统错误',status: -1})
                 }
             })
         }
@@ -104,18 +104,17 @@ router.post('/getOrderItem', (req, res) => {
 router.post('/addStatusDtl', (req, res) => {
     var sql = $sql.order.addStatusDtl
     var params = req.body
-    console.log(params)
+    params.confrim_time = new Date(new Date().toLocaleDateString()).getTime()
     checkToken(res, params.token).then(data => {
         if(data){
-            params.confrim_time = new Date(new Date().toLocaleDateString()).getTime()
             conn.query(sql, [params.order_status, params.order_name, params.order_no, params.status_many, params.work_type, params.user_name, params.user_id, params.confrim_time], function(err, result) {
                 if (err) {
                     console.log(err)
                 }
                 if (result) {
-                    res.json({data: '提交成功',status: 0})
+                    return res.json({data: '提交成功',status: 0})
                 }else{
-                    res.json({data: '系统错误',status: -1})
+                    return res.json({data: '系统错误',status: -1})
                 }
             })
         }
@@ -133,10 +132,10 @@ router.post('/setOrderStatus', (req, res) => {
                 if (result) {
                     console.log(result, 'result')
 
-                    res.json({data: '修改成功',status: 0})
+                    return res.json({data: '修改成功',status: 0})
                 }else{
                     console.log(err, 'err')
-                    res.json({data: '系统错误',status: -1})
+                    return res.json({data: '系统错误',status: -1})
                 }
             })
         }

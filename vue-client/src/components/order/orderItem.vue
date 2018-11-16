@@ -53,7 +53,7 @@ import _ from 'lodash'
                             this.$toast(res.data)
                             setTimeout(() => {
                                 that.$router.push({
-                                    path: '/home'
+                                    path: '/'
                                 })
                             }, 500);
                         }
@@ -103,6 +103,7 @@ import _ from 'lodash'
                         }
                         this.$http.post('/jyclient/api/order/addStatusDtl', params).then(res=>{
                             this.$toast(res.data)
+                            this.getOrderItem()
                         }).catch(err => {
                             console.log(err)
                         })

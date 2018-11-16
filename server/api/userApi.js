@@ -11,19 +11,19 @@ conn.connect()
 console.log('conn.connect()')
 var jsonWrite = function(res, ret) {
     if(typeof ret === 'undefined') {
-        res.json({
+        return res.json({
             code: '1',
             msg: '操作失败'
         })
     } else {
-        res.json(ret)
+        return res.json(ret)
     }
 }
 function checkToken(res,token){
     var sql = $sql.user.checkToken
     return new Promise(resolve => {
         if(_.isEmpty(token)){
-            res.json({data: 'token失效', status: -1})
+            res.json({data: '登录失效', status: -1})
             resolve(false)
             return
         }
@@ -31,7 +31,7 @@ function checkToken(res,token){
             if (result) {
                 resolve(true)
             }else{
-                res.json({data: 'token失效', status: -1})
+                res.json({data: '登录失效', status: -1})
                 resolve(false)
             }
         })
@@ -69,11 +69,11 @@ router.post('/login', (req, res) => {
         }
         if (result1) {
             if(result1.length<1){
-                res.json({data: '该用户不存在', status: -1})            
+                return res.json({data: '该用户不存在', status: -1})            
                 return
             }
             if(result1[0].pwd!=params.pwd){
-                res.json({data: '密码错误', status: -1})            
+                return res.json({data: '密码错误', status: -1})            
                 return
             }
             var nowTime = Date.parse(new Date())
@@ -81,12 +81,12 @@ router.post('/login', (req, res) => {
             conn.query(loginSuccess, [nowTime,token, params.tel], function(err, result){
                 //存时间戳
                 if (err) {
-                    res.json({data: err, status: 0})
+                    return res.json({data: err, status: 0})
                     console.log(err)
                 }
                 if(result){
                     conn.query(getUserInfo, [token], function(err, result2) {
-                        res.json({data: result2[0], status: 0})
+                        return res.json({data: result2[0], status: 0})
                     })
                 }
             })
@@ -105,16 +105,16 @@ router.post('/getUserInfo', (req, res) => {
                 }
                 if (result) {
                     if(result.length<1){
-                        res.json({data: '该用户不存在', status: -1})
+                        return res.json({data: '该用户不存在', status: -1})
                         return
                     }
                     var nowTime = Date.parse(new Date())/1000
                     if(_.isEmpty(result[0].login_time)||(result[0].login_time/1000+21600)<nowTime){
                         //登录失效
-                        res.json({data: '您还未登录，请先登录', status: -1})
+                        return res.json({data: '您还未登录，请先登录', status: -1})
                         return
                     }
-                    res.json({data: result[0], status: 0})
+                    return res.json({data: result[0], status: 0})
                 }
             })
         }
@@ -134,7 +134,7 @@ router.post('/changePwd', (req, res) => {
                 }
                 if (result) {
                     if(result.length<1){
-                        res.json({data: '该用户不存在', status: -1})            
+                        return res.json({data: '该用户不存在', status: -1})            
                         return
                     }
                     if(result[0].pwd==params.oldPwd){
@@ -144,11 +144,11 @@ router.post('/changePwd', (req, res) => {
                                 console.log(err)
                             }
                             if (result) {
-                                res.json({data: '修改成功', status: 0})
+                                return res.json({data: '修改成功', status: 0})
                             }
                         })
                     }else{
-                        res.json({data: '旧密码不正确', status: -1})
+                        return res.json({data: '旧密码不正确', status: -1})
                     }
                 }
             })
