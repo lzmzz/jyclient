@@ -8,17 +8,6 @@ var _ = require('lodash')
 var conn = mysql.createConnection(models.mysql)
 
 conn.connect()
-console.log('conn.connect()')
-var jsonWrite = function(res, ret) {
-    if(typeof ret === 'undefined') {
-        return res.json({
-            code: '1',
-            msg: '操作失败'
-        })
-    } else {
-        return res.json(ret)
-    }
-}
 function checkToken(res,token){
     var sql = $sql.user.checkToken
     return new Promise(resolve => {
@@ -38,25 +27,6 @@ function checkToken(res,token){
     })
 }
 
-// 增加用户接口
-router.post('/addUser', (req, res) => {
-    checkToken(res, params.token).then(data => {
-        if(data){
-            var sql = $sql.user.add
-            var params = req.body
-            console.log(params)
-            conn.query(sql, [params.name, params.tel, params.work_type], function(err, result) {
-                if (err) {
-                    console.log(err)
-                }
-                if (result) {
-                    console.log(result,'conn.connect()conn.connect()conn.connect()conn.connect()')
-                    jsonWrite(res, result)
-                }
-            })
-        }
-    })
-})
 // 登录接口
 router.post('/login', (req, res) => {
     var sql = $sql.user.login
@@ -125,33 +95,29 @@ router.post('/changePwd', (req, res) => {
     var changePwd = $sql.user.changePwd
     var login = $sql.user.login
     var params = req.body
-    checkToken(res, params.token).then(data => {
-        if(data){
-            conn.query(login, [params.tel], function(err, result) {
-                //先查老密码
-                if (err) {
-                    console.log(err)
-                }
-                if (result) {
-                    if(result.length<1){
-                        return res.json({data: '该用户不存在', status: -1})            
-                        return
+    conn.query(login, [params.tel], function(err, result) {
+        //先查老密码
+        if (err) {
+            console.log(err)
+        }
+        if (result) {
+            if(result.length<1){
+                return res.json({data: '该用户不存在', status: -1})            
+                return
+            }
+            if(result[0].pwd==params.oldPwd){
+                //如果老密码正确，再改密码
+                conn.query(changePwd, [params.newPwd, params.tel], function(err, result) {
+                    if (err) {
+                        console.log(err)
                     }
-                    if(result[0].pwd==params.oldPwd){
-                        //如果老密码正确，再改密码
-                        conn.query(changePwd, [params.newPwd, params.tel], function(err, result) {
-                            if (err) {
-                                console.log(err)
-                            }
-                            if (result) {
-                                return res.json({data: '修改成功', status: 0})
-                            }
-                        })
-                    }else{
-                        return res.json({data: '旧密码不正确', status: -1})
+                    if (result) {
+                        return res.json({data: '修改成功', status: 0})
                     }
-                }
-            })
+                })
+            }else{
+                return res.json({data: '旧密码不正确', status: -1})
+            }
         }
     })
     

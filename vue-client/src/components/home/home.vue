@@ -3,45 +3,62 @@
         <van-nav-bar
         title="订单中心"
         />
-        <div ref="scroll">
-            <div v-if="orderList.length>0" class="scrollContent listPanel">
-                <div v-for="(item,index) in orderList" :key="index" class="orderItem van-hairline--bottom" @click="goOrderItem(item.order_no)">
-                    <div>{{item.order_name}}<span>订单号：{{item.order_no}}</span></div>
-                    <van-icon name="arrow" />
+        <van-tabs v-model="activeNav" sticky swipeable @change="changeNav">
+            <van-tab title="未开始">
+                <div v-if="orderList.length>0" class="listPanel">
+                    <div v-for="(item,index) in orderList" :key="index" class="orderItem van-hairline--bottom" @click="goOrderItem(item.order_no)">
+                        <div>规格：{{item.order_format}}<span>订单号：{{item.order_no}}</span></div>
+                        <van-icon name="arrow" />
+                    </div>
                 </div>
-            </div>
-            <div v-else class="noData">
-                <img src="@/assets/images/tableNoData.png" alt="">
-            </div>
-        </div>
+                <div v-else class="noData">
+                    <img src="@/assets/images/tableNoData.png" alt="">
+                </div>
+            </van-tab>
+            <van-tab title="进行中">
+                <div v-if="orderList.length>0" class="listPanel">
+                    <div v-for="(item,index) in orderList" :key="index" class="orderItem van-hairline--bottom" @click="goOrderItem(item.order_no)">
+                        <div>规格：{{item.order_format}}<span>订单号：{{item.order_no}}</span></div>
+                        <van-icon name="arrow" />
+                    </div>
+                </div>
+                <div v-else class="noData">
+                    <img src="@/assets/images/tableNoData.png" alt="">
+                </div>
+            </van-tab>
+            <van-tab title="已完成">
+                <div v-if="orderList.length>0" class="listPanel">
+                    <div v-for="(item,index) in orderList" :key="index" class="orderItem van-hairline--bottom" @click="goOrderItem(item.order_no)">
+                        <div>规格：{{item.order_format}}<span>订单号：{{item.order_no}}</span></div>
+                        <van-icon name="arrow" />
+                    </div>
+                </div>
+                <div v-else class="noData">
+                    <img src="@/assets/images/tableNoData.png" alt="">
+                </div>
+            </van-tab>
+        </van-tabs>
     </div>
 </template>
 
 <script>
 import _ from 'lodash'
-import BScroll from 'better-scroll'
     export default {
         data() {
             return {
                 userInfo: JSON.parse(localStorage.getItem('userInfo')),
-                orderList: []
+                orderList: [],
+                activeNav: 1,
             }
         },
         created(){
-            this.$nextTick(() => {
-                this._initScroll()
-            })
         },
         mounted() {
             this.getUserInfo()
         },
         methods: {
-            _initScroll: function(){
-                var option = {
-                    tap: true,
-                    click: true,
-                }
-                this.scroll = new BScroll(this.$refs.scroll, option)
+            changeNav: function(index, title){
+                this.getOrderList(index)
             },
             goOrderItem: function(orderNo){
                 this.$router.push({
@@ -66,7 +83,7 @@ import BScroll from 'better-scroll'
                         }, 2000)
                         return
                     }else{
-                        this.getOrderList(true)
+                        this.getOrderList(1)
                     }
                 })
             },
@@ -84,13 +101,6 @@ import BScroll from 'better-scroll'
                     }
                 })
             },
-            onItemClick: function(index){
-                if(index==0){
-                    this.getOrderList(true)
-                }else{
-                    this.getOrderList(false)
-                }
-            }
         },
     }
 </script>
@@ -98,7 +108,7 @@ import BScroll from 'better-scroll'
 <style scoped>
 /* .body{background: #fafdfc;height: 100vh;}
 .listPanel{background: white;} */
-.orderItem{display: flex;align-items: center;justify-content: space-between;padding: .2rem;font-size: 0.4133rem}
+.orderItem{display: flex;align-items: center;justify-content: space-between;padding: .2rem;font-size: 0.4233rem}
 .orderItem div span{font-size: 0.28rem;color: #999;display: block;margin-top: .1rem;}
 .arrowRight{fill: #999}
 .noData{display: flex;justify-content: center;align-items: center;height: 5rem;}

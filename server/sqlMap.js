@@ -10,7 +10,7 @@ var sqlMap = {
         checkToken: 'select work_type from `user` where token=?',
     },
     order: {
-        getOrderList: 'select * from `order` where order_status = ?',
+        getOrderList: 'select * from `order` where create_time >= ? and order_status ',
         getOrderList2: 'select * from `status_details` where order_status = ? and user_name = ?',
         getOrderItem: 'select * from `order` where order_no = ?',
         addStatusDtl: 'insert into status_details(order_status, order_name, order_no, status_many, work_type, user_name, user_id, confrim_time) values (?, ?, ?, ?, ?, ?, ?, ?)',

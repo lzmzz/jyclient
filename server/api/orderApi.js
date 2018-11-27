@@ -43,31 +43,28 @@ function checkToken(res,token){
 // 获取订单列表
 router.post('/getOrderList', (req, res) => {
     var params = req.body
+    var date=new Date()
+    date.setDate(1)
+    params.startDay = new Date(date.toLocaleDateString()).getTime()
     checkToken(res, params.token).then(data => {
         if(data){
-            if(params.doing){
-                var sql = $sql.order.getOrderList
-                conn.query(sql, [params.work_type], function(err, result) {
-                    if (err) {
-                        console.log(err)
-                    }
-                    console.log(result,'conn.connect()conn.connect()conn.connect()conn.connect()')
-                    if (result) {
-                        return res.json({data: result, status: 0})                                    
-                    }
-                })
-            }else{
-                var sql = $sql.order.getOrderList2
-                conn.query(sql, [params.work_type, params.user_name], function(err, result) {
-                    if (err) {
-                        console.log(err)
-                    }
-                    console.log(result,'conn.connect()conn.connect()conn.connect()conn.connect()')
-                    if (result) {
-                        return res.json({data: result, status: 0})                                    
-                    }
-                })
+            var sql = $sql.order.getOrderList
+            if(params.doing==1){
+                //进行中
+                sql+='= ?'
+            }else if(params.doing==0){
+                sql+='< ?'
+            }else if(params.doing==2){
+                sql+='> ?'                
             }
+            conn.query(sql, [params.startDay,params.work_type], function(err, result) {
+                if (err) {
+                    console.log(err)
+                }
+                if (result) {
+                    return res.json({data: result, status: 0})                                    
+                }
+            })
         }
     })
 })
