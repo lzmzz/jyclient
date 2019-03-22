@@ -38,7 +38,6 @@ import _ from 'lodash'
             oldPwd: '',
             newPwd1: '',
             newPwd2: '',
-            token: JSON.parse(localStorage.getItem('userInfo')).token,
         }
     },
     created(){
@@ -66,7 +65,7 @@ import _ from 'lodash'
 
                 return
             }
-            this.$http.post('/jyclient/api/user/changePwd', {tel: this.tel, newPwd: this.newPwd1, oldPwd: this.oldPwd, token: this.token}).then(res=>{
+            this.$http.post('/jyclient/api/user/changePwd', {tel: this.tel, newPwd: this.newPwd1, oldPwd: this.oldPwd}).then(res=>{
                 if(res.status==-1){
                     this.$toast(res.data)
 

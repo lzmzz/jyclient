@@ -8,6 +8,7 @@ const path = require('path')
 const bodyParser = require('body-parser')
 const express = require('express')
 const app = express()
+const common = require('./server/api/common')
 
 //设置跨域访问
 app.all('*', function(req, res, next) {
@@ -28,6 +29,23 @@ app.use(express.static(path.join(__dirname, 'dist')))
 app.get('/jyclient', function (req, res) {
   res.sendFile(path.join(__dirname+'/dist/index.html'))
 })
+
+app.use('/jyclient/api/', function(req, res, next){
+  if(req.body.token){
+    //传了token表示要验证
+    common.checkToken(req.body.token).then(res=>{
+      if(!res){
+        res.json({data: '登录失效', status: -1})    
+        return false
+      }else{
+        next()
+      }
+    })
+  }else{
+    next()
+  }
+})
+
 app.use('/jyclient/api/user', userApi)
 app.use('/jyclient/api/order', orderApi)
 // 监听端口
