@@ -2,7 +2,6 @@
   <div>
     <van-nav-bar title="订单详情" left-text="返回" left-arrow @click-left="$router.go(-1)"/>
     <cell :title="'订单号'" :value="orderData.order_no"></cell>
-    <cell :title="'订单名'" :value="orderData.order_name"></cell>
     <cell :title="'订单类型'" :value="orderData.order_type==0?'出货生产单':'库存生产单'"></cell>
     <cell :title="'订单规格'" :value="orderData.order_format"></cell>
     <cell :title="'订单备注'" :value="orderData.order_remark"></cell>
@@ -18,20 +17,22 @@
         type="number"
         class="orderInput"
         placeholder="请输入"
+        v-if="type==1"
         v-model="orderData.status_many"
       >
-      <!-- <div class="orderInput">{{orderData.status_many}}</div> -->
+      <div class="orderInput" v-else>{{orderData.status_many}}</div>
     </cell>
     <Button
       round
       type="primary"
       @click.native="addStatusDtl"
+      v-if="type==1"
       class="qdBtn"
     >确定</Button>
     <Button
       round
       type="danger"
-      v-if="userInfo.is_master==1"
+      v-if="userInfo.is_master==1&&type==1"
       @click.native="setOrderStatus"
       class="qdBtn"
     >已完成</Button>
@@ -45,6 +46,7 @@ export default {
     return {
       userInfo: JSON.parse(localStorage.getItem("userInfo")),
       orderData: {},
+      type: this.$route.query.type,
       statusArr: [
         "开料中",
         "拉伸中",
@@ -136,7 +138,6 @@ export default {
             user_name: this.userInfo.name,
             user_id: this.userInfo.id,
             status_many: this.orderData.status_many,
-            order_name: this.orderData.order_name,
             order_status: this.orderData.order_status
           };
           this.$http

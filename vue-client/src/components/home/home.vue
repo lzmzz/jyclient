@@ -64,7 +64,7 @@ import _ from 'lodash'
             goOrderItem: function(orderNo){
                 this.$router.push({
                     path: '/orderItem',
-                    query: {orderNo}
+                    query: {orderNo, 'type': this.activeNav}
                 })
             },
             getUserInfo(){

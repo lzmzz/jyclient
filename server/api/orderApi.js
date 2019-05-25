@@ -71,7 +71,7 @@ router.post('/addStatusDtl', (req, res) => {
   conn.query('select * from `status_details` where user_id = ?', [params.user_id], function(err, rst){
     if(rst.length<1){
       sql = $sql.order.addStatusDtl
-      conn.query(sql, [params.order_status, params.order_name, params.order_no, params.status_many, params.work_type, params.user_name, params.user_id, params.confrim_time], function (err1, result) {
+      conn.query(sql, [params.order_status, params.order_no, params.status_many, params.work_type, params.user_name, params.user_id, params.confrim_time], function (err1, result) {
         if (err1) {
           console.log(err1)
         }
