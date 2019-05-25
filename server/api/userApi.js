@@ -19,6 +19,7 @@ router.post('/login', (req, res) => {
     if (err) {
       console.log(err)
     }
+    console.log(result1);
     if (result1) {
       if (result1.length < 1) {
         return res.json({

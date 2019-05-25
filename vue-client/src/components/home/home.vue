@@ -52,9 +52,10 @@ import _ from 'lodash'
             }
         },
         created(){
+          this.getUserInfo()
+          this.getOrderList(1)
         },
         mounted() {
-            this.getUserInfo()
         },
         methods: {
             changeNav: function(index, title){
@@ -73,19 +74,6 @@ import _ from 'lodash'
                     })
                     return
                 }
-                this.$http.post('/jyclient/api/user/getUserInfo', {token: this.userInfo.token}).then(res=>{
-                    if(res.status==-1){
-                        this.$toast(res.data)
-                        setTimeout(() => {
-                            this.$router.push({
-                                path: '/login'
-                            })
-                        }, 2000)
-                        return
-                    }else{
-                        this.getOrderList(1)
-                    }
-                })
             },
             getOrderList: function(status){
                 var params = {

@@ -45,12 +45,10 @@ router.post('/getOrderItem', (req, res) => {
       console.log(err)
     }
     if (result) {
-      result[0].status_exist = false
       result[0].status_many = null
       conn.query(checkStatusDtl, [params.orderNo, params.user_id], function (err, result1) {
         if (result1.length > 0) {
           result[0].status_many = result1[0].status_many
-          result[0].status_exist = true
         }
         return res.json({
           data: result[0],
@@ -67,25 +65,49 @@ router.post('/getOrderItem', (req, res) => {
 })
 // 提交实际数量API
 router.post('/addStatusDtl', (req, res) => {
-  var sql = $sql.order.addStatusDtl
+  var sql = ''
   var params = req.body
   params.confrim_time = new Date(new Date().toLocaleDateString()).getTime()
-  conn.query(sql, [params.order_status, params.order_name, params.order_no, params.status_many, params.work_type, params.user_name, params.user_id, params.confrim_time], function (err, result) {
-    if (err) {
-      console.log(err)
-    }
-    if (result) {
-      return res.json({
-        data: '提交成功',
-        status: 0
+  conn.query('select * from `status_details` where user_id = ?', [params.user_id], function(err, rst){
+    if(rst.length<1){
+      sql = $sql.order.addStatusDtl
+      conn.query(sql, [params.order_status, params.order_name, params.order_no, params.status_many, params.work_type, params.user_name, params.user_id, params.confrim_time], function (err1, result) {
+        if (err1) {
+          console.log(err1)
+        }
+        if (result) {
+          return res.json({
+            data: '提交成功',
+            status: 0
+          })
+        } else {
+          return res.json({
+            data: '系统错误',
+            status: -1
+          })
+        }
       })
-    } else {
-      return res.json({
-        data: '系统错误',
-        status: -1
+    }else{
+      sql = $sql.order.setStatusDtl
+      conn.query(sql, [params.status_many, params.confrim_time, params.order_no, params.user_id], function (err1, result) {
+        if (err1) {
+          console.log(err1)
+        }
+        if (result) {
+          return res.json({
+            data: '提交成功',
+            status: 0
+          })
+        } else {
+          return res.json({
+            data: '系统错误',
+            status: -1
+          })
+        }
       })
     }
   })
+  
 })
 // 修改订单状态
 router.post('/setOrderStatus', (req, res) => {

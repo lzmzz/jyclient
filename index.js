@@ -31,10 +31,10 @@ app.get('/jyclient', function (req, res) {
 })
 
 app.use('/jyclient/api/', function(req, res, next){
-  if(req.body.token){
+  if(req.url!='/user/login'){
     //传了token表示要验证
-    common.checkToken(req.body.token).then(res=>{
-      if(!res){
+    common.checkToken(req.body.token).then(res1=>{
+      if(!res1){
         res.json({data: '登录失效', status: -1})    
         return false
       }else{
