@@ -11,7 +11,7 @@ var sqlMap = {
     },
     order: {
         getOrderList: 'select * from `order` where create_time >= ? and order_status ',
-        getOrderList2: 'select * from `status_details` where order_status = ? and user_name = ?',
+        getManyList: 'select status_many, user_name, user_id from `status_details` where order_no = ? and order_status = ?',
         getOrderItem: 'select * from `order` where order_no = ?',
         addStatusDtl: 'insert into status_details(order_status, order_no, status_many, work_type, user_name, user_id, confrim_time) values (?, ?, ?, ?, ?, ?, ?)',
         checkStatusDtl: 'select status_many from `status_details` where order_no=? and user_id=?',

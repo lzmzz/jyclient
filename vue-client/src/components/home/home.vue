@@ -7,7 +7,7 @@
             <van-tab title="未开始">
                 <div v-if="orderList.length>0" class="listPanel">
                     <div v-for="(item,index) in orderList" :key="index" class="orderItem van-hairline--bottom" @click="goOrderItem(item.order_no)">
-                        <div>规格：{{item.order_format}}<span>订单号：{{item.order_no}}</span></div>
+                        <div>规格：{{item.order_format}}<span>订单号：{{item.order_no}}<span v-if="item.order_remark">备注：{{item.order_remark}}</span></span></div>
                         <van-icon name="arrow" />
                     </div>
                 </div>
@@ -52,8 +52,9 @@ import _ from 'lodash'
             }
         },
         created(){
+          this.userInfo=JSON.parse(localStorage.getItem('userInfo'))
           this.getUserInfo()
-          this.getOrderList(1)
+          
         },
         mounted() {
         },
@@ -69,10 +70,23 @@ import _ from 'lodash'
             },
             getUserInfo(){
                 if(_.isEmpty(this.userInfo)){
-                    this.$router.push({
+                  this.$toast('登录失效')
+                  this.$router.push({
+                    path: '/login'
+                  })
+                }else{
+                  this.$http.post('/jyclient/api/user/getUserInfo', {token: this.userInfo.token}).then(res=>{
+                    if(res.status==-1){
+                      this.$toast('登录失效')
+                      this.$router.push({
                         path: '/login'
-                    })
-                    return
+                      })
+                    }else{
+                      this.userInfo = res.data
+                      localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+                      this.getOrderList(1)
+                    }
+                  })
                 }
             },
             getOrderList: function(status){
@@ -97,7 +111,8 @@ import _ from 'lodash'
 /* .body{background: #fafdfc;height: 100vh;}
 .listPanel{background: white;} */
 .orderItem{display: flex;align-items: center;justify-content: space-between;padding: .2rem;font-size: 0.4233rem}
-.orderItem div span{font-size: 0.28rem;color: #999;display: block;margin-top: .1rem;}
+.orderItem div>span{font-size: 0.28rem;color: #999;display: block;margin-top: .1rem;}
+.orderItem div>span span{margin-left: .2rem}
 .arrowRight{fill: #999}
 .noData{display: flex;justify-content: center;align-items: center;height: 5rem;}
 </style>

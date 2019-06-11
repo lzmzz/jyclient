@@ -9,7 +9,7 @@
         <div class="iptPanel">
             <div>
                 <img src="@/assets/images/userIcon.png" alt="">
-                <input type="password" placeholder="输入手机号" v-model="tel">
+                <input type="tel" placeholder="输入手机号" v-model="tel">
             </div>
             <div>
                 <img src="@/assets/images/pwdIcon.png" alt="">

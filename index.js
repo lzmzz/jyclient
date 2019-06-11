@@ -31,7 +31,7 @@ app.get('/jyclient', function (req, res) {
 })
 
 app.use('/jyclient/api/', function(req, res, next){
-  if(req.url!='/user/login'){
+  if(req.url!='/user/login'&&req.url!='/user/changePwd'){
     //传了token表示要验证
     common.checkToken(req.body.token).then(res1=>{
       if(!res1){

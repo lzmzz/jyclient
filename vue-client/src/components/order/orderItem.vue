@@ -12,7 +12,7 @@
       </div>
     </cell>
     <cell :title="'订单数量'" :value="orderData.order_many"></cell>
-    <cell :title="'实际完成数量'">
+    <cell :title="'你完成的数量'">
       <input
         type="number"
         class="orderInput"
@@ -22,6 +22,9 @@
       >
       <div class="orderInput" v-else>{{orderData.status_many}}</div>
     </cell>
+    <van-panel title="已完成数量详情" desc="只显示当前状态的完成数量" :status="manyList.length>0?'':'暂无'">
+      <cell v-for="(item, index) in manyList" :key="index" :title="item.user_name" :value="item.status_many"></cell>
+    </van-panel>
     <Button
       round
       type="primary"
@@ -32,7 +35,7 @@
     <Button
       round
       type="danger"
-      v-if="userInfo.is_master==1&&type==1"
+      v-if="userInfo.is_master==1"
       @click.native="setOrderStatus"
       class="qdBtn"
     >已完成</Button>
@@ -59,7 +62,8 @@ export default {
         "清洗中",
         "包装中",
         "已完成"
-      ]
+      ],
+      manyList: []
     };
   },
   created() {},
@@ -99,7 +103,7 @@ export default {
       var params = {
         token: this.userInfo.token,
         orderNo: this.$route.query.orderNo,
-        user_id: this.userInfo.id
+        user_id: this.userInfo.id,
       };
       this.$http
         .post("/jyclient/api/order/getOrderItem", params)
@@ -107,7 +111,8 @@ export default {
           if (res.status == -1) {
             this.$toast(res.data);
           } else {
-            this.orderData = res.data;
+            this.orderData = res.data.orderItem;
+            this.manyList = res.data.manyList
             // for(var i=0;i<this.statusArr.length;i++){
             //     if(this.orderData.order_status==i){
             //         this.orderData.order_status=this.statusArr[i]

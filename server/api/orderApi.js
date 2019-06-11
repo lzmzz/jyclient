@@ -39,6 +39,7 @@ router.post('/getOrderList', (req, res) => {
 router.post('/getOrderItem', (req, res) => {
   var sql = $sql.order.getOrderItem
   var checkStatusDtl = $sql.order.checkStatusDtl
+  var getManyList = $sql.order.getManyList
   var params = req.body
   conn.query(sql, [params.orderNo], function (err, result) {
     if (err) {
@@ -46,14 +47,20 @@ router.post('/getOrderItem', (req, res) => {
     }
     if (result) {
       result[0].status_many = null
-      conn.query(checkStatusDtl, [params.orderNo, params.user_id], function (err, result1) {
-        if (result1.length > 0) {
-          result[0].status_many = result1[0].status_many
-        }
-        return res.json({
-          data: result[0],
-          status: 0
+      conn.query(getManyList, [params.orderNo, result[0].order_status], function (err, result1) {
+        conn.query(checkStatusDtl, [params.orderNo, params.user_id], function (err, result2) {
+          if(result2.length>0){
+            result[0].status_many = result2[0].status_many
+          }
+          return res.json({
+            data: {
+              orderItem: result[0],
+              manyList: result1,
+            },
+            status: 0
+          })
         })
+        
       })
     } else {
       return res.json({
@@ -68,7 +75,7 @@ router.post('/addStatusDtl', (req, res) => {
   var sql = ''
   var params = req.body
   params.confrim_time = new Date(new Date().toLocaleDateString()).getTime()
-  conn.query('select * from `status_details` where user_id = ?', [params.user_id], function(err, rst){
+  conn.query('select * from `status_details` where user_id = ? and order_no = ?', [params.user_id, params.order_no], function(err, rst){
     if(rst.length<1){
       sql = $sql.order.addStatusDtl
       conn.query(sql, [params.order_status, params.order_no, params.status_many, params.work_type, params.user_name, params.user_id, params.confrim_time], function (err1, result) {
